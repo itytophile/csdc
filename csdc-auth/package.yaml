@@ -1,0 +1,37 @@
+name:                csdc-auth
+version:             0.1.0.0
+github:              "githubuser/csdc-auth"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "example@example.com"
+copyright:           "2021 Author name here"
+
+dependencies:
+- base >= 4.7 && < 5
+- aeson
+- bytestring
+- text
+- wai
+- http-types
+- exceptions
+- http-client-tls
+- wai-middleware-auth
+- unordered-containers
+- hoauth2
+- uri-bytestring
+- http-conduit
+- warp
+
+library:
+  source-dirs: src
+
+executables:
+  csdc-auth-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - csdc-auth

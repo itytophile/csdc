@@ -1,14 +1,19 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module CSDC.Data.RIO
-  ( RIO
-  , runRIO
-  ) where
+  ( RIO,
+    runRIO,
+  )
+where
 
 import Control.Monad.IO.Class (MonadIO (..))
-import Control.Monad.Reader (ReaderT, runReaderT, ask)
+import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.State (MonadState (..))
-import Data.IORef (IORef, readIORef, atomicModifyIORef', atomicWriteIORef)
+import Data.IORef (IORef, atomicModifyIORef', atomicWriteIORef, readIORef)
 
 newtype RIO s m a = RIO (ReaderT (IORef s) m a)
   deriving newtype (Functor, Applicative, Monad, MonadIO)
@@ -27,5 +32,5 @@ instance MonadIO m => MonadState s (RIO s m) where
 
   state f = RIO $ do
     var <- ask
-    let f' !x = let !(!a,!b) = f x in (b,a)
+    let f' !x = let !(!a, !b) = f x in (b, a)
     liftIO $ atomicModifyIORef' var f'

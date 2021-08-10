@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module CSDC.SQL.Decoder
   ( -- * Base types
     text
@@ -15,15 +17,23 @@ module CSDC.SQL.Decoder
   , Decoders.noResult
   ) where
 
-import CSDC.Prelude
-import Prelude hiding (id)
+import           CSDC.Prelude                   ( Id(Id)
+                                                , MessageStatus(..)
+                                                , MessageType(..)
+                                                , ReplyStatus(..)
+                                                , ReplyType(..)
+                                                )
+import           Prelude                 hiding ( id )
 
-import qualified CSDC.Auth.ORCID as ORCID
+import qualified CSDC.Auth.ORCID               as ORCID
 
-import Data.Text (Text)
-import Hasql.Decoders (Row, column, nonNullable)
+import           Data.Text                      ( Text )
+import           Hasql.Decoders                 ( Row
+                                                , column
+                                                , nonNullable
+                                                )
 
-import qualified Hasql.Decoders as Decoders
+import qualified Hasql.Decoders                as Decoders
 
 --------------------------------------------------------------------------------
 -- Base types
@@ -42,33 +52,20 @@ orcidId = ORCID.Id <$> column (nonNullable Decoders.text)
 
 messageType :: Row MessageType
 messageType = column (nonNullable (Decoders.enum decode))
-  where
-    decode a = lookup a
-      [ ("Invitation", Invitation)
-      , ("Submission", Submission)
-      ]
+ where
+  decode a = lookup a [("Invitation", Invitation), ("Submission", Submission)]
 
 messageStatus :: Row MessageStatus
 messageStatus = column (nonNullable (Decoders.enum decode))
-  where
-    decode a = lookup a
-      [ ("Waiting", Waiting)
-      , ("Accepted", Accepted)
-      , ("Rejected", Rejected)
-      ]
+ where
+  decode a = lookup
+    a
+    [("Waiting", Waiting), ("Accepted", Accepted), ("Rejected", Rejected)]
 
 replyType :: Row ReplyType
 replyType = column (nonNullable (Decoders.enum decode))
-  where
-    decode a = lookup a
-      [ ("Accept", Accept)
-      , ("Reject", Reject)
-      ]
+  where decode a = lookup a [("Accept", Accept), ("Reject", Reject)]
 
 replyStatus :: Row ReplyStatus
 replyStatus = column (nonNullable (Decoders.enum decode))
-  where
-    decode a = lookup a
-      [ ("Seen", Seen)
-      , ("NotSeen", NotSeen)
-      ]
+  where decode a = lookup a [("Seen", Seen), ("NotSeen", NotSeen)]

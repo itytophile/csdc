@@ -1,91 +1,90 @@
-cabal-version: 2.2
-name:
-  csdc-api
-version:
-  0.1.0.0
-synopsis:
-  API for the CSDC network.
-description:
-  API library for the CSDC network.
-license:
-  BSD-3-Clause
-author:
-  Juan Raphael Diaz Simoes
-maintainer:
-  mail@guaraqe.gq
-build-type:
-  Simple
+cabal-version: 1.12
 
-common dependencies
-  build-depends:
-    csdc-auth,
-    csdc-base,
-    aeson,
-    aeson-pretty,
-    base,
-    bytestring,
-    ghc-prim,
-    hasql,
-    hasql-migration,
-    hasql-transaction,
-    mtl,
-    network-uri,
-    servant,
-    servant-server,
-    text,
-    wai-app-static
+-- This file has been generated from package.yaml by hpack version 0.34.2.
+--
+-- see: https://github.com/sol/hpack
 
-common extensions
-  default-extensions:
-    DataKinds
-    DeriveFoldable
-    DeriveFunctor
-    DeriveGeneric
-    DeriveTraversable
-    DerivingStrategies
-    DerivingVia
-    GeneralizedNewtypeDeriving
-    KindSignatures
-    LambdaCase
-    OverloadedStrings
-    TypeOperators
+name:           csdc-api
+version:        0.1.0.0
+homepage:       https://github.com/githubuser/csdc-api#readme
+bug-reports:    https://github.com/githubuser/csdc-api/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2021 Author name here
+license:        BSD3
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/csdc-api
 
 library
-  import: dependencies, extensions
   exposed-modules:
-    CSDC.Config
-    CSDC.API
-    CSDC.API.DAO
-    CSDC.DAO
-    CSDC.SQL
-    CSDC.SQL.Decoder
-    CSDC.SQL.Encoder
-    CSDC.SQL.Members
-    CSDC.SQL.MessageMembers
-    CSDC.SQL.MessageSubparts
-    CSDC.SQL.Persons
-    CSDC.SQL.Subparts
-    CSDC.SQL.Units
+      CSDC.API
+      CSDC.API.DAO
+      CSDC.Config
+      CSDC.DAO
+      CSDC.SQL
+      CSDC.SQL.Decoder
+      CSDC.SQL.Encoder
+      CSDC.SQL.Members
+      CSDC.SQL.MessageMembers
+      CSDC.SQL.MessageSubparts
+      CSDC.SQL.Persons
+      CSDC.SQL.Subparts
+      CSDC.SQL.Units
+  other-modules:
+      Paths_csdc_api
   hs-source-dirs:
-    src
-  ghc-options:
-    -Wall
-  default-language:
-    Haskell2010
+      src
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , bytestring
+    , csdc-auth
+    , csdc-base
+    , ghc-prim
+    , hasql
+    , hasql-migration
+    , hasql-transaction
+    , mtl
+    , network-uri
+    , servant-server
+    , text
+    , wai
+    , wai-app-static
+    , wai-cors
+    , wai-logger
+    , warp
+  default-language: Haskell2010
 
 executable csdc-server
-  import: dependencies, extensions
-  main-is:
-    Main.hs
-  build-depends:
-    csdc-api,
-    wai,
-    wai-cors,
-    wai-logger,
-    warp
+  main-is: Main.hs
+  other-modules:
+      Paths_csdc_api
   hs-source-dirs:
-    app
-  ghc-options:
-    -Wall
-  default-language:
-    Haskell2010
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , bytestring
+    , csdc-api
+    , csdc-auth
+    , csdc-base
+    , ghc-prim
+    , hasql
+    , hasql-migration
+    , hasql-transaction
+    , mtl
+    , network-uri
+    , servant-server
+    , text
+    , wai
+    , wai-app-static
+    , wai-cors
+    , wai-logger
+    , warp
+  default-language: Haskell2010

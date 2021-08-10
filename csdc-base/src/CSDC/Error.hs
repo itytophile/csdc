@@ -1,12 +1,17 @@
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+
 module CSDC.Error
-  ( Error (..)
-  , IsError (..)
-  , HasError
-  ) where
+  ( Error (..),
+    IsError (..),
+    HasError,
+  )
+where
 
 import Control.Monad.Except (MonadError)
 
-data Error = DAOError String
+newtype Error
+  = DAOError String
   deriving (Show, Eq)
 
 class IsError e where

@@ -1,61 +1,46 @@
-name:
-  csdc-base
-version:
-  0.1.0.0
-synopsis:
-  Base library for the CSDC network.
-description:
-  Base library for the CSDC network.
-license:
-  BSD3
-author:
-  Juan Raphael Diaz Simoes
-maintainer:
-  mail@guaraqe.gq
-build-type:
-  Simple
-cabal-version:
-  >=1.10
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           csdc-base
+version:        0.1.0.0
+homepage:       https://github.com/githubuser/csdc-base#readme
+bug-reports:    https://github.com/githubuser/csdc-base/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2021 Author name here
+license:        BSD3
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/csdc-base
 
 library
   exposed-modules:
-    CSDC.Aeson
-    CSDC.Data.Id
-    CSDC.Data.IdMap
-    CSDC.Data.RIO
-    CSDC.Error
-    CSDC.DAO.Class
-    CSDC.DAO.Mock
-    CSDC.DAO.Types
-    CSDC.Prelude
-    CSDC.User
-  build-depends:
-    csdc-auth,
-    aeson,
-    base,
-    containers,
-    http-api-data,
-    lens,
-    mtl,
-    text
+      CSDC.Aeson
+      CSDC.DAO.Class
+      CSDC.DAO.Mock
+      CSDC.DAO.Types
+      CSDC.Data.Id
+      CSDC.Data.IdMap
+      CSDC.Data.RIO
+      CSDC.Error
+      CSDC.Prelude
+      CSDC.User
+  other-modules:
+      Paths_csdc_base
   hs-source-dirs:
-    src
-  default-extensions:
-    ConstraintKinds
-    DeriveFoldable
-    DeriveFunctor
-    DeriveGeneric
-    DeriveTraversable
-    DerivingStrategies
-    DerivingVia
-    FlexibleContexts
-    FlexibleInstances
-    GeneralizedNewtypeDeriving
-    InstanceSigs
-    MultiParamTypeClasses
-    FunctionalDependencies
-    RankNTypes
-  ghc-options:
-    -Wall
-  default-language:
-    Haskell2010
+      src
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , containers
+    , csdc-auth
+    , http-api-data
+    , lens
+    , mtl
+    , text
+  default-language: Haskell2010

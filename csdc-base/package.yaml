@@ -1,0 +1,20 @@
+name:                csdc-base
+version:             0.1.0.0
+github:              "githubuser/csdc-base"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "example@example.com"
+copyright:           "2021 Author name here"
+
+dependencies:
+- base >= 4.7 && < 5
+- aeson
+- mtl
+- text
+- http-api-data
+- containers
+- csdc-auth
+- lens
+
+library:
+  source-dirs: src

@@ -1,0 +1,42 @@
+name:                csdc-api
+version:             0.1.0.0
+github:              "githubuser/csdc-api"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "example@example.com"
+copyright:           "2021 Author name here"
+
+dependencies:
+- base >= 4.7 && < 5
+- text
+- servant-server
+- wai
+- wai-app-static
+- wai-cors
+- aeson
+- bytestring
+- mtl
+- aeson-pretty
+- network-uri
+- ghc-prim
+- hasql
+- hasql-migration
+- hasql-transaction
+- csdc-auth
+- csdc-base
+- wai-logger
+- warp
+
+library:
+  source-dirs: src
+
+executables:
+  csdc-server:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - csdc-api

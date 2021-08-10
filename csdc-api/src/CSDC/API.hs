@@ -3,36 +3,46 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module CSDC.API
-  ( API
-  , serveAPI
-    -- * Utils
-  , Auth
-  ) where
+  ( API,
+    serveAPI,
 
-import CSDC.Auth (getUserToken)
-import CSDC.Prelude
-import CSDC.User (runUserT)
+    -- * Utils
+    Auth,
+  )
+where
 
 import qualified CSDC.API.DAO as DAO
-
+import CSDC.Auth (getUserToken)
+import CSDC.Prelude ( UserToken, HasDAO )
+import CSDC.User (runUserT)
 import Servant
+    ( Proxy(Proxy),
+      hoistServer,
+      serveDirectoryWith,
+      type (:<|>)(..),
+      Raw,
+      type (:>),
+      HasServer(..) )
 import Servant.Server.Internal.Delayed (passToServer)
-
-import WaiAppStatic.Types (StaticSettings (..), unsafeToPiece)
 import WaiAppStatic.Storage.Filesystem (defaultWebAppSettings)
+import WaiAppStatic.Types (StaticSettings (..), unsafeToPiece)
 
 --------------------------------------------------------------------------------
 -- API
 
 type API =
-       Auth :> "api" :> DAO.API
-  :<|> Raw
+  Auth :> "api" :> DAO.API
+    :<|> Raw
 
 serveAPI :: HasDAO m => FilePath -> ServerT API m
 serveAPI path =
-         serveDAOAPI
+  serveDAOAPI
     :<|> serveDirectoryWith (options path)
   where
     serveDAOAPI token =
@@ -40,14 +50,12 @@ serveAPI path =
 
 options :: FilePath -> StaticSettings
 options path =
-  let
-    base = defaultWebAppSettings path
+  let base = defaultWebAppSettings path
 
-    indexRedirect old = \case
-      [] -> old [ unsafeToPiece "index.html" ]
-      pcs -> old pcs
-  in
-    base { ssLookupFile = indexRedirect (ssLookupFile base) }
+      indexRedirect old = \case
+        [] -> old [unsafeToPiece "index.html"]
+        pcs -> old pcs
+   in base {ssLookupFile = indexRedirect (ssLookupFile base)}
 
 --------------------------------------------------------------------------------
 -- Auth

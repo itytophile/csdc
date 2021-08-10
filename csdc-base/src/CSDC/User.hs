@@ -2,33 +2,44 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module CSDC.User
   ( -- * Type
-    User (..)
+    User(..)
   , UserId
+  ,
+
     -- * Class
-  , HasUser (..)
+    HasUser(..)
+  ,
+
     -- * Transformer
-  , UserT
+    UserT
   , runUserT
   ) where
 
-import CSDC.Auth (UserToken)
-import CSDC.Auth.User (User (..))
-import CSDC.DAO.Class
-  ( HasDAO (..)
-  , HasCRUD (..)
-  , HasRelation (..)
-  , HasMessage (..)
-  )
-import CSDC.DAO.Types (Person (..), Unit (..), Member (..), Subpart (..))
-import CSDC.Data.Id (Id)
-
-import qualified CSDC.Auth.ORCID as ORCID
-
-import Control.Monad.Reader (MonadReader (..), ReaderT (..))
-import Control.Monad.Trans (MonadTrans (..))
+import           CSDC.Auth                      ( UserToken )
+import qualified CSDC.Auth.ORCID               as ORCID
+import           CSDC.Auth.User                 ( User(..) )
+import           CSDC.DAO.Class                 ( HasCRUD(..)
+                                                , HasDAO(..)
+                                                , HasMessage(..)
+                                                , HasRelation(..)
+                                                )
+import           CSDC.DAO.Types                 ( Member(..)
+                                                , Person(..)
+                                                , Subpart(..)
+                                                , Unit(..)
+                                                )
+import           CSDC.Data.Id                   ( Id )
+import           Control.Monad.Reader           ( MonadReader(..)
+                                                , ReaderT(..)
+                                                )
+import           Control.Monad.Trans            ( MonadTrans(..) )
 
 --------------------------------------------------------------------------------
 -- Class
@@ -46,39 +57,36 @@ class Monad m => HasUser m where
 -- | A transformer that adds the 'HasUser' capability to another monad.
 newtype UserT m a = UserT (ReaderT UserToken m a)
   deriving newtype
-    ( Functor
-    , Applicative
-    , Monad
-    , MonadTrans
-    , HasDAO
+    ( Functor,
+      Applicative,
+      Monad,
+      MonadTrans,
+      HasDAO
     )
 
 deriving newtype instance HasCRUD Person m => HasCRUD Person (UserT m)
+
 deriving newtype instance HasCRUD Unit m => HasCRUD Unit (UserT m)
+
 deriving newtype instance HasRelation Member m => HasRelation Member (UserT m)
+
 deriving newtype instance HasRelation Subpart m => HasRelation Subpart (UserT m)
+
 deriving newtype instance HasMessage Member m => HasMessage Member (UserT m)
+
 deriving newtype instance HasMessage Subpart m => HasMessage Subpart (UserT m)
 
 instance HasDAO m => HasUser (UserT m) where
-  getUser = UserT $
-    ask >>= \case
-      Admin ->
-        pure Admin
-
-      User token ->
-        selectPersonORCID (ORCID.token_orcid token) >>= \case
-          Nothing ->
-            let
-              person = Person
-                { person_name = ORCID.token_name token
-                , person_orcid = ORCID.token_orcid token
-                , person_description = ""
-                }
-            in
-              User <$> insert @Person person
-          Just uid ->
-            pure $ User uid
+  getUser = UserT $ ask >>= \case
+    Admin      -> pure Admin
+    User token -> selectPersonORCID (ORCID.token_orcid token) >>= \case
+      Nothing ->
+        let person = Person { person_name        = ORCID.token_name token
+                            , person_orcid       = ORCID.token_orcid token
+                            , person_description = ""
+                            }
+        in  User <$> insert @Person person
+      Just uid -> pure $ User uid
 
 -- | Execute an 'UserT' in its base monad.
 runUserT :: UserToken -> UserT m a -> m a

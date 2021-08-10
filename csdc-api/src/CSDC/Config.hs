@@ -1,4 +1,8 @@
 {-# LANGUAGE StrictData #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module CSDC.Config
   ( -- * Config

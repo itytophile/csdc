@@ -1,7 +1,4 @@
-dist-newstyle
-www/*.js
+www/app.js
+*.aes
 secret.json
-client_session_key.aes
-admin-cookies
-.docker
-result
+**/.stack-work

@@ -1,0 +1,9 @@
+resolver: lts-18.5
+
+packages:
+- csdc-auth
+- csdc-base
+- csdc-api
+
+extra-deps:
+- hasql-migration-0.3.0

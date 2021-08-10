@@ -1,47 +1,84 @@
 # CSDC DAO
 
-![build](https://github.com/guaraqe/csdc/workflows/build/badge.svg)
-
 This repository contains a work-in-progress webapp for the CSDC DAO. It
 currently has two components: a server and a GUI.
 
+This fork exists to manage the project with Stack. With Stack, the [haskell-language-server](https://github.com/haskell/haskell-language-server) works out of the box.
+
 ## Development
 
-This projects uses [Nix](https://nixos.org/download.html) to manage
-dependencies. To install Nix, run:
+This projects uses [Stack](https://docs.haskellstack.org/en/stable/README/).
+
+On Debian you must use the Bullseye repos for it to work:
 
 ```
-curl -L https://nixos.org/nix/install | sh
+sudo apt install haskell-stack
 ```
 
-Then, enter the development shell with:
-
-```
-nix-shell
-```
-
-which will download all necessary dependencies. Most common commands are
-accessible from the Makefile. To list the available commands, run `make`.
-
-In particular:
-
-  - For faster Haskell development, there are many `ghcid-*` targerts.
-
-  - For Elm development, there is `make gui-build`.
-
-## Running the server
-
-First, make sure the GUI is built with:
-
-```
-make gui-build
-```
-
-Second, you will need to obtain an ID and a secret from
+You will need an ID and a secret from
 [ORCID](https://orcid.org/developer-tools), and write them to the `secret.json`
 file, which should follow the model of the `secret-model.json` file.
 
-Finally, run:
+## Dependencies
+
+On Debian:
+
+```
+sudo apt install libpq-dev zlib1g-dev
+```
+
+## Postgresql configuration without docker
+
+On Debian:
+
+```
+sudo su postgres
+```
+
+Then:
+
+```
+createuser --pwprompt csdc
+createdb -O csdc csdc
+```
+
+## Building the server
+
+### Debug (faster compile times)
+
+Building the GUI:
+
+```
+make gui-debug
+```
+
+Building the server:
+
+```
+make build-debug
+```
+
+### Release
+
+Clean the debug builds:
+
+```
+make clean-haskell && make clean-elm
+```
+
+Building the GUI:
+
+```
+make gui-release
+```
+
+Building the server:
+
+```
+make build-release
+```
+
+## Running the server
 
 ```
 make serve

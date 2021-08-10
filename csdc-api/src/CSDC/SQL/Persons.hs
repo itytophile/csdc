@@ -61,9 +61,9 @@ insert = Statement sql encoder decoder True
       ]
 
     encoder =
-      (contramap person_name Encoder.text) <>
-      (contramap person_description Encoder.text) <>
-      (contramap person_orcid Encoder.orcidId)
+      contramap person_name Encoder.text <>
+      contramap person_description Encoder.text <>
+      contramap person_orcid Encoder.orcidId
 
     decoder = Decoder.singleRow Decoder.id
 
@@ -76,10 +76,10 @@ insertAt = Statement sql encoder decoder True
       ]
 
     encoder =
-      (contramap fst Encoder.id) <>
-      (contramap (person_name . snd) Encoder.text) <>
-      (contramap (person_description . snd) Encoder.text) <>
-      (contramap (person_orcid . snd) Encoder.orcidId)
+      contramap fst Encoder.id <>
+      contramap (person_name . snd) Encoder.text <>
+      contramap (person_description . snd) Encoder.text <>
+      contramap (person_orcid . snd) Encoder.orcidId
 
     decoder = Decoder.noResult
 
@@ -93,10 +93,10 @@ update = Statement sql encoder decoder True
       ]
 
     encoder =
-      (contramap fst Encoder.id) <>
-      (contramap (person_name . snd) Encoder.text) <>
-      (contramap (person_description . snd) Encoder.text) <>
-      (contramap (person_orcid . snd) Encoder.orcidId)
+      contramap fst Encoder.id <>
+      contramap (person_name . snd) Encoder.text <>
+      contramap (person_description . snd) Encoder.text <>
+      contramap (person_orcid . snd) Encoder.orcidId
 
     decoder = Decoder.noResult
 
