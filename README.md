@@ -7,7 +7,7 @@ This fork exists to manage the project with Stack. With Stack, the [haskell-lang
 
 ## Development
 
-This projects uses [Stack](https://docs.haskellstack.org/en/stable/README/) and [Elm](https://elm-lang.org/).
+This project uses [Stack](https://docs.haskellstack.org/en/stable/README/) and [Elm](https://elm-lang.org/).
 
 On Debian you must use the Bullseye repos for Stack to work:
 
