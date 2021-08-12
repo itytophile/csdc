@@ -181,13 +181,13 @@ instance ToSchema (User (Id Person)) where
   declareNamedSchema _ = do
     stringSchema <- declareSchemaRef (Proxy :: Proxy String)
     intSchema <- declareSchemaRef (Proxy :: Proxy Int)
-    return $ NamedSchema (Just "Coord") $ mempty
+    return $ NamedSchema (Just "User") $ mempty
       & type_ ?~ SwaggerObject
       & properties .~
           [ ("tag", stringSchema)
           , ("contents", intSchema)
           ]
-      & required .~ [ "x", "y" ]
+      & required .~ [ "tag" ]
 
 serveAPI :: (HasUser m, HasDAO m) => ServerT API m
 serveAPI =
