@@ -1,56 +1,32 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE KindSignatures             #-}
+{-# LANGUAGE OverloadedLists            #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE TypeOperators              #-}
+
 module CSDC.API.DAO (
   API,
   serveAPI,
 ) where
 
-import CSDC.Prelude
-    ( getPersonInfo,
-      getUnitChildren,
-      getUnitInfo,
-      getUnitMembers,
-      getUnitParents,
-      getUserUnits,
-      HasCRUD(..),
-      HasDAO(inboxUnit, rootUnit, createUnit, inboxPerson),
-      HasMessage(..),
-      HasRelation(..),
-      IsRelation(RelationL, RelationR),
-      Inbox,
-      Member,
-      Message,
-      Person,
-      PersonInfo,
-      Reply,
-      Subpart,
-      Unit,
-      UnitInfo,
-      Id,
-      WithId,
-      IdMap,
-      HasUser(..),
-      UserId )
-
-import GHC.Types (Symbol)
-import Servant
-    ( type (:<|>)(..),
-      Capture,
-      JSON,
-      ReqBody,
-      type (:>),
-      Delete,
-      Get,
-      Post,
-      HasServer(ServerT) )
-
+import qualified CSDC.Auth.ORCID     as ORCID
+import           CSDC.DAO.Types
+import           CSDC.Prelude
+import           Control.Lens
+import           Data.Proxy
+import           Data.Swagger
+import           Data.Swagger.Schema (ToSchema)
+import           GHC.Types
+import           Servant
 --------------------------------------------------------------------------------
 -- Synonyms
 
-type GetJSON a = Get '[JSON] a
-type PostJSON a b = ReqBody '[JSON] a :> Post '[JSON] b
-type DeleteJSON a = Delete '[JSON] a
+type GetJSON a = Get '[Servant.JSON] a
+type PostJSON a b = ReqBody '[Servant.JSON] a :> Post '[Servant.JSON] b
+type DeleteJSON a = Delete '[Servant.JSON] a
 type CaptureId a = Capture "id" (Id a)
 
 --------------------------------------------------------------------------------
@@ -67,7 +43,7 @@ serveCRUD =
   select
     :<|> insert
     :<|> update
-    :<|> delete
+    :<|> CSDC.Prelude.delete
 
 type REL (left :: Symbol) (right :: Symbol) r =
   left :> CaptureId (RelationL r) :> GetJSON (IdMap r r)
@@ -114,7 +90,7 @@ servePersonAPI =
 -- Unit API
 
 type UnitAPI =
-  "root" :> Get '[JSON] (Id Unit)
+  "root" :> Get '[Servant.JSON] (Id Unit)
     :<|> CaptureId Unit :> "info" :> GetJSON (Maybe UnitInfo)
     :<|> CaptureId Unit :> "members" :> GetJSON (IdMap Member (WithId Person))
     :<|> CaptureId Unit :> "children" :> GetJSON (IdMap Subpart (WithId Unit))
@@ -173,6 +149,45 @@ type API =
     :<|> "member" :> MemberAPI
     :<|> "subpart" :> SubpartAPI
     :<|> "message" :> MessageAPI
+
+type SwaggerAPI = "swagger.json" :> Get '[Servant.JSON] Swagger
+
+instance ToParamSchema (Id a)
+
+instance ToSchema ORCID.Id
+instance ToSchema Person
+instance ToSchema Unit
+instance ToSchema Member
+instance ToSchema Subpart
+instance ToSchema MessageStatus
+instance ToSchema MessageType
+instance ToSchema ReplyStatus
+instance ToSchema ReplyType
+instance ToSchema PersonInfo
+instance ToSchema Inbox
+instance ToSchema UnitInfo
+
+instance ToSchema (Id a)
+instance ToSchema a => ToSchema (WithId a)
+instance ToSchema a => ToSchema (IdMap b a)
+
+instance ToSchema a => ToSchema (Message a)
+instance ToSchema a => ToSchema (Reply a)
+instance ToSchema a => ToSchema (MessageInfo a)
+instance ToSchema a => ToSchema (ReplyInfo a)
+
+
+instance ToSchema (User (Id Person)) where
+  declareNamedSchema _ = do
+    stringSchema <- declareSchemaRef (Proxy :: Proxy String)
+    intSchema <- declareSchemaRef (Proxy :: Proxy Int)
+    return $ NamedSchema (Just "Coord") $ mempty
+      & type_ ?~ SwaggerObject
+      & properties .~
+          [ ("tag", stringSchema)
+          , ("contents", intSchema)
+          ]
+      & required .~ [ "x", "y" ]
 
 serveAPI :: (HasUser m, HasDAO m) => ServerT API m
 serveAPI =

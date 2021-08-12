@@ -4,6 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StrictData #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 --------------------------------------------------------------------------------
 -- References
@@ -49,6 +50,7 @@ import           Data.Aeson                     ( (.:)
 import           Data.ByteString.Lazy           ( ByteString )
 import           Data.Text                      ( Text )
 import           Data.Text.Encoding             ( encodeUtf8 )
+import           GHC.Generics                   ( Generic )
 import qualified Network.HTTP.Client.TLS       as HTTP.TLS
 import           Network.OAuth.OAuth2           ( AccessToken
                                                 , RefreshToken
@@ -59,7 +61,6 @@ import           Network.Wai.Middleware.Auth.Provider
 import           URI.ByteString                 ( parseURI
                                                 , strictURIParserOptions
                                                 )
-
 --------------------------------------------------------------------------------
 -- Configuration
 
@@ -136,7 +137,7 @@ newtype Scope = Scope Text
   deriving newtype (Show, Eq, FromJSON, ToJSON)
 
 newtype Id = Id {getId :: Text}
-  deriving newtype (Show, Eq, FromJSON, ToJSON)
+  deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
 instance FromJSON Token where
   parseJSON = withObject "Token" $ \o ->

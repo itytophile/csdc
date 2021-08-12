@@ -26,6 +26,9 @@ dependencies:
 - csdc-base
 - wai-logger
 - warp
+- servant-swagger
+- swagger2
+- lens
 
 library:
   source-dirs: src

@@ -48,9 +48,12 @@ library
     , hasql
     , hasql-migration
     , hasql-transaction
+    , lens
     , mtl
     , network-uri
     , servant-server
+    , servant-swagger
+    , swagger2
     , text
     , wai
     , wai-app-static
@@ -78,9 +81,12 @@ executable csdc-server
     , hasql
     , hasql-migration
     , hasql-transaction
+    , lens
     , mtl
     , network-uri
     , servant-server
+    , servant-swagger
+    , swagger2
     , text
     , wai
     , wai-app-static

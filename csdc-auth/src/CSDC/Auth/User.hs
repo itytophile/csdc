@@ -7,6 +7,7 @@ module CSDC.Auth.User
 import           Data.Aeson.TH                  ( defaultOptions
                                                 , deriveJSON
                                                 )
+import           GHC.Generics                   ( Generic )
 
 -- | The current user of the server API. It can be either an admin or an user.
 data User user = Admin | User user

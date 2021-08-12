@@ -1,12 +1,12 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE LambdaCase            #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeApplications      #-}
+{-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module CSDC.API
   ( API,
@@ -17,33 +17,41 @@ module CSDC.API
   )
 where
 
-import qualified CSDC.API.DAO as DAO
-import CSDC.Auth (getUserToken)
-import CSDC.Prelude ( UserToken, HasDAO )
-import CSDC.User (runUserT)
-import Servant
-    ( Proxy(Proxy),
-      hoistServer,
-      serveDirectoryWith,
-      type (:<|>)(..),
-      Raw,
-      type (:>),
-      HasServer(..) )
-import Servant.Server.Internal.Delayed (passToServer)
-import WaiAppStatic.Storage.Filesystem (defaultWebAppSettings)
-import WaiAppStatic.Types (StaticSettings (..), unsafeToPiece)
+import qualified CSDC.API.DAO                    as DAO
+import           CSDC.Auth                       (getUserToken)
+import           CSDC.Prelude                    (HasDAO, UserToken)
+import           CSDC.User                       (runUserT)
+import           Control.Lens
+import           Data.Swagger
+import           Servant
+import           Servant.Server.Internal.Delayed (passToServer)
+import           Servant.Swagger
+import           WaiAppStatic.Storage.Filesystem (defaultWebAppSettings)
+import           WaiAppStatic.Types              (StaticSettings (..),
+                                                  unsafeToPiece)
 
 --------------------------------------------------------------------------------
 -- API
+type CsdcApi = "api" :> DAO.API
+csdcAPI :: Proxy CsdcApi
+csdcAPI = Proxy
 
 type API =
-  Auth :> "api" :> DAO.API
+  Auth :> CsdcApi
+    :<|> "swagger.json" :> Get '[JSON] Swagger
     :<|> Raw
+
+csdcSwagger :: Swagger
+csdcSwagger = toSwagger csdcAPI
+  & info.title   .~ "CSDC DAO API"
+  & info.version .~ "0.1"
+  & info.description ?~ "The API used by the Elm app"
 
 serveAPI :: HasDAO m => FilePath -> ServerT API m
 serveAPI path =
   serveDAOAPI
-    :<|> serveDirectoryWith (options path)
+    :<|> return csdcSwagger
+    :<|> serveDirectoryWith (CSDC.API.options path)
   where
     serveDAOAPI token =
       hoistServer (Proxy @DAO.API) (runUserT token) DAO.serveAPI
@@ -53,7 +61,7 @@ options path =
   let base = defaultWebAppSettings path
 
       indexRedirect old = \case
-        [] -> old [unsafeToPiece "index.html"]
+        []  -> old [unsafeToPiece "index.html"]
         pcs -> old pcs
    in base {ssLookupFile = indexRedirect (ssLookupFile base)}
 

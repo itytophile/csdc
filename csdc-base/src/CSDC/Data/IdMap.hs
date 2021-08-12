@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module CSDC.Data.IdMap
   ( IdMap (..),
@@ -27,12 +28,13 @@ import Data.IntMap.Strict (IntMap)
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.List as List
 import Prelude hiding (filter, lookup)
+import GHC.Generics (Generic)
 
 --------------------------------------------------------------------------------
 -- Type definition
 
 newtype IdMap a b = IdMap {getIdMap :: IntMap b}
-  deriving newtype (Show, Eq, Functor, Foldable, ToJSON, FromJSON)
+  deriving (Show, Generic, Eq, Functor, Foldable, ToJSON, FromJSON)
   deriving stock (Traversable)
 
 type IdMap' a = IdMap a a
