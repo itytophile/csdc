@@ -8,17 +8,14 @@ module CSDC.Component.MessageSubpart exposing
   )
 
 import CSDC.API as API
-import CSDC.Input exposing (button)
+import CSDC.Input
 import CSDC.Notification as Notification
 import CSDC.Notification exposing (Notification)
 import CSDC.Types exposing (..)
-import Field exposing (Field)
-import Validation exposing (Validation)
 
 import Element exposing (..)
 import Element.Font as Font
 import Element.Input as Input
-import String
 
 --------------------------------------------------------------------------------
 -- Model
@@ -81,9 +78,9 @@ update msg param model =
              , value =
                  case param.messageType of
                    Invitation ->
-                     Subpart unit param.unit.id
-                   Submission ->
                      Subpart param.unit.id unit
+                   Submission ->
+                     Subpart unit param.unit.id
              }
           in
             ( { model | notification = Notification.Processing }
