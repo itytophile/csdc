@@ -1,0 +1,16 @@
+cradle:
+  cabal:
+    - path: "csdc-api/src"
+      component: "lib:csdc-api"
+
+    - path: "csdc-api/app"
+      component: "exe:csdc-server"
+
+    - path: "csdc-auth/app"
+      component: "exe:auth-test-server"
+
+    - path: "csdc-auth/src"
+      component: "lib:csdc-auth"
+
+    - path: "csdc-base/src"
+      component: "lib:csdc-base"

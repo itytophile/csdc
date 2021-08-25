@@ -29,6 +29,15 @@ In particular:
 
   - For Elm development, there is `make gui-build`.
 
+## Haskell Language Server with VSCode
+You have to install cabal "for real" because the language server doesn't run in the Nix environment.
+
+Then run this command:
+```
+cabal update
+```
+
+Finally, install [the extension](https://marketplace.visualstudio.com/items?itemName=haskell.haskell).
 ## Running the server
 
 First, make sure the GUI is built with:
